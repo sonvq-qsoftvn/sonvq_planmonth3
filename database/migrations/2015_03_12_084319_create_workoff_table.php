@@ -20,7 +20,6 @@ class CreateWorkoffTable extends Migration {
 			$table->string('name', 255)->nullable();
             $table->string('position', 255)->nullable();            
             $table->string('department', 255)->nullable();
-            $table->string('kind', 255)->nullable();
             $table->string('reason', 255)->nullable();
             $table->string('description', 255)->nullable();
             $table->integer('days')->nullable();

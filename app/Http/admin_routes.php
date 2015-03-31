@@ -116,5 +116,9 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function() {
     Route::post('workoff/{id}/edit', 'Admin\WorkoffController@postEdit');
     Route::get('workoff/{id}/delete', 'Admin\WorkoffController@getDelete');
     Route::post('workoff/{id}/delete', 'Admin\WorkoffController@postDelete');
+    Route::get('workoff/{id}/approve', 'Admin\WorkoffController@getApprove');
+    Route::post('workoff/{id}/approve', 'Admin\WorkoffController@postApprove');
+    Route::get('workoff/{id}/reject', 'Admin\WorkoffController@getReject');
+    Route::post('workoff/{id}/reject', 'Admin\WorkoffController@postReject');
     Route::get('workoff/data', 'Admin\WorkoffController@data');
 });

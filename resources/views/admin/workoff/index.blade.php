@@ -19,8 +19,14 @@
 <table id="table" class="table table-striped table-hover">
 	<thead>
 		<tr>
-			<th>{{{ Lang::get("admin/modal.title") }}}</th>
-			<th>{{{ Lang::get("admin/admin.created_at") }}}</th>
+			<th>{{{ Lang::get("admin/workoff.name") }}}</th>
+			<th>{{{ Lang::get("admin/workoff.position") }}}</th>
+            <th>{{{ Lang::get("admin/workoff.department") }}}</th>
+            <th>{{{ Lang::get("admin/workoff.reason") }}}</th>
+            <th>{{{ Lang::get("admin/workoff.days") }}}</th>
+            <th>{{{ Lang::get("admin/workoff.datestart") }}}</th>
+            <th>{{{ Lang::get("admin/workoff.dateend") }}}</th>
+            <th>{{{ Lang::get("admin/workoff.status") }}}</th>
 			<th>{{{ Lang::get("admin/admin.action") }}}</th>
 		</tr>
 	</thead>

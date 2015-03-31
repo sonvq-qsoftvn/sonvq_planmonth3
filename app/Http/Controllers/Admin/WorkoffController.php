@@ -1,10 +1,10 @@
 <?php namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\AdminController;
-use App\Role;
+use App\Workoff;
 use App\Permission;
 use App\PermissionRole;
-use App\Http\Requests\Admin\RoleRequest;
+use App\Http\Requests\Admin\WorkoffRequest;
 use App\Http\Requests\Admin\DeleteRequest;
 use Datatables;
 
@@ -25,47 +25,27 @@ class WorkoffController extends AdminController {
      * @return Response
      */
     public function getCreate() {
-        // Get all the available permissions
-        $permissionsAdmin = Permission::where('is_admin','=',1)->get();
-        $permissionsUser = Permission::where('is_admin','=',0)->get();
-        // Selected permissions
-        $permisionsadd =array();
-
         // Show the page
-        return view('admin.roles.create_edit', compact('permissionsAdmin', 'permissionsUser','permisionsadd'));
+        return view('admin.workoff.create_edit');
     }
     /**
      * Store a newly created resource in storage.
      *
      * @return Response
      */
-    public function postCreate(RoleRequest $request) {
-
-        $is_admin = 0;
-        // Check if role is for admin user
-        if(!empty($request->permission)){
-	    	$permissionsAdmin = Permission::where('is_admin','=',1)->get();
-		    foreach ($permissionsAdmin as $perm){
-	            foreach($request->permission as $item){
-	                if($item==$perm['id'] && $perm['is_admin']=='1')
-	                {
-	                    $is_admin = 1;
-	                }
-	            }
-	        }
-		}
-        $role = new Role();
-        $role -> is_admin = $is_admin;
-        $role -> name = $request->name;
-        $role -> save();
-		if(is_array($request->permission)){
-	        foreach ($request->permission as $item) {
-	            $permission = new PermissionRole();
-	            $permission->permission_id = $item;
-	            $permission->role_id = $role->id;
-	            $permission -> save();
-	        }
-		}
+    public function postCreate(WorkoffRequest $request) {
+        $work = new Workoff();
+        
+        $work -> name = $request->name;
+        $work -> position = $request->position;
+        $work -> department = $request->department;
+        $work -> reason = $request->reason;
+        $work -> days = $request->days;
+        $work -> datestart = $request->datestart;
+        $work -> dateend = $request->dateend;
+        $work -> status = 1;
+        $work -> language_id = 1;
+        $work -> save();
     }
 
     /**
@@ -75,13 +55,10 @@ class WorkoffController extends AdminController {
      * @return Response
      */
     public function getEdit($id) {
-        $role = Role::find($id);
-        $permissionsAdmin = Permission::where('is_admin','=',1)->get();
-        $permissionsUser = Permission::where('is_admin','=',0)->get();
-        $permisionsadd = PermissionRole::where('role_id','=',$id)->select('permission_id')->get();
+        $work = Workoff::find($id);
 
         // Show the page
-        return view('admin.roles.create_edit', compact('role', 'permissionsAdmin', 'permissionsUser','permisionsadd'));
+        return view('admin.workoff.create_edit', compact('work'));
     }
 
     /**
@@ -90,34 +67,18 @@ class WorkoffController extends AdminController {
      * @param $role
      * @return Response
      */
-    public function postEdit(RoleRequest $request, $id) {
-        $is_admin = 0;
-		if(!empty($request->permission)){
-	        $permissionsAdmin = Permission::where('is_admin','=',1)->get();
-	        foreach ($permissionsAdmin as $perm){
-	            foreach($request->permission as $item){
-	                if($item==$perm['id'] && $perm['is_admin']=='1')
-	                {
-	                    $is_admin = 1;
-	                }
-	            }
-	        }
-		}
-        $role = Role::find($id);
-        $role -> is_admin = $is_admin;
-        $role -> name = $request->name;
-        $role -> save();
-
-        PermissionRole::where('role_id','=',$id) -> delete();
-		
-		if(is_array($request->permission)){
-	        foreach ($request->permission as $item) {	        	
-	            $permission = new PermissionRole();
-	            $permission->permission_id = $item;
-	            $permission->role_id = $role->id;
-	            $permission -> save();
-	        }
-		}
+    public function postEdit(WorkoffRequest $request, $id) {
+        $work = Workoff::find($id);
+        $work -> name = $request->name;
+        $work -> position = $request->position;
+        $work -> department = $request->department;
+        $work -> reason = $request->reason;
+        $work -> days = $request->days;
+        $work -> language_id = 1;
+        $work -> status = 1;
+        $work -> datestart = $request->datestart;
+        $work -> dateend = $request->dateend;
+        $work -> save();
     }
 
     /**
@@ -129,11 +90,36 @@ class WorkoffController extends AdminController {
 
     public function getDelete($id)
     {
-        $role = Role::find($id);
+        $workoff = Workoff::find($id);
         // Show the page
-        return view('admin.roles.delete', compact('role'));
+        return view('admin.workoff.delete', compact('workoff'));
+    }
+    
+    public function getApprove($id)
+    {
+        $workoff = Workoff::find($id);
+        // Show the page
+        return view('admin.workoff.approve', compact('workoff'));
+    }
+    
+    public function getReject($id)
+    {
+        $workoff = Workoff::find($id);
+        // Show the page
+        return view('admin.workoff.reject', compact('workoff'));
+    }
+    
+    public function postApprove(DeleteRequest $request,$id) {
+        $workoff = Workoff::find($id);
+        $workoff->status = 2;
+        $workoff->save();
     }
 
+    public function postReject(DeleteRequest $request,$id) {
+        $workoff = Workoff::find($id);
+        $workoff->status = 3;
+        $workoff->save();
+    }
     /**
      * Remove the specified resource from storage.
      *
@@ -142,8 +128,8 @@ class WorkoffController extends AdminController {
      */
     public function postDelete(DeleteRequest $request,$id)
     {
-        $role = Role::find($id);
-        $role->delete();
+        $workoff = Workoff::find($id);
+        $workoff->delete();
     }
     /**
      * Show a list of all the languages posts formatted for Datatables.
@@ -152,11 +138,14 @@ class WorkoffController extends AdminController {
      */
     public function data()
     {
-        $roles = Role::select(array('roles.id','roles.name','roles.created_at'));
+        $workoffs = Workoff::select(array('workoff.id','workoff.name','workoff.position', 'workoff.department', 'workoff.reason', 'workoff.days', 'workoff.datestart', 'workoff.dateend', 'workoff.status'));
 
-        return Datatables::of($roles)
-            ->add_column('actions', '<a href="{{{ URL::to(\'admin/roles/\' . $id . \'/edit\' ) }}}" class="btn btn-success btn-sm iframe" ><span class="glyphicon glyphicon-pencil"></span>  {{ Lang::get("admin/modal.edit") }}</a>
-                    <a href="{{{ URL::to(\'admin/roles/\' . $id . \'/delete\' ) }}}" class="btn btn-sm btn-danger iframe"><span class="glyphicon glyphicon-trash"></span> {{ Lang::get("admin/modal.delete") }}</a>
+        return Datatables::of($workoffs)
+            -> edit_column('status', '@if ($status=="1") <b><i>pending</i></b> @elseif ($status=="2") <b><i>approved</i></b> @else <b><i>rejected</i></b> @endif')
+            ->add_column('actions', '<a href="{{{ URL::to(\'admin/workoff/\' . $id . \'/edit\' ) }}}" class="btn btn-success btn-sm iframe" ><span class="glyphicon glyphicon-pencil"></span>  {{ Lang::get("admin/modal.edit") }}</a>
+                    <a href="{{{ URL::to(\'admin/workoff/\' . $id . \'/delete\' ) }}}" class="btn btn-sm btn-danger iframe"><span class="glyphicon glyphicon-trash"></span> {{ Lang::get("admin/modal.delete") }}</a>
+                    <a href="{{{ URL::to(\'admin/workoff/\' . $id . \'/approve\' ) }}}" class="btn btn-sm btn-success iframe"><span class="glyphicon glyphicon-thumbs-up"></span> {{ Lang::get("admin/workoff.approve") }}</a>
+                    <a href="{{{ URL::to(\'admin/workoff/\' . $id . \'/reject\' ) }}}" class="btn btn-sm btn-danger iframe"><span class="glyphicon glyphicon-thumbs-down"></span> {{ Lang::get("admin/workoff.reject") }}</a>
                 ')
             ->remove_column('id')
             ->make();

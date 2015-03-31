@@ -3,14 +3,14 @@
         <ul class="nav nav-tabs">
             <li class="active"><a href="#tab-general" data-toggle="tab">{{ Lang::get("admin/modal.general") }}</a></li>
         </ul>
-    <form id="deleteForm" class="form-horizontal" method="post" action="@if (isset($workoff)){{ URL::to('admin/workoff/' . $workoff->id . '/delete') }}@endif" autocomplete="off">
+    <form id="deleteForm" class="form-horizontal" method="post" action="@if (isset($workoff)){{ URL::to('admin/workoff/' . $workoff->id . '/reject') }}@endif" autocomplete="off">
         <input type="hidden" name="_token" value="{{{ csrf_token() }}}" />
         <input type="hidden" name="id" value="{{ $workoff->id }}" />
         <div class="form-group">
             <div class="controls">
                {{ Lang::get("admin/modal.delete_message") }}<br>
                 <element class="btn btn-warning btn-sm close_popup"><span class="glyphicon glyphicon-ban-circle"></span>  {{ Lang::get("admin/modal.cancel") }}</element>
-                <button type="submit" class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-trash"></span> {{ Lang::get("admin/modal.delete") }}</button>
+                <button type="submit" class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-trash"></span> {{ Lang::get("admin/workoff.reject") }}</button>
             </div>
         </div>
     </form>

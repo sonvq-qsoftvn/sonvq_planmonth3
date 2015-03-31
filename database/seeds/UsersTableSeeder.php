@@ -8,7 +8,6 @@ class UsersTableSeeder extends Seeder {
     {
         DB::table('users')->delete();
 
-
         $users = array(
             array(
                 'name'      => 'Admin User',
@@ -31,6 +30,15 @@ class UsersTableSeeder extends Seeder {
             array(
                 'name'      => 'Nguyen Quynh Mai',
                 'email'      => 'mainq@qsoftvietnam.com',
+                'password'   => Hash::make('user'),
+                'confirmed'   => 1,
+                'confirmation_code' => md5(microtime().Config::get('app.key')),
+                'created_at' => new DateTime,
+                'updated_at' => new DateTime,
+            ),
+            array(
+                'name'      => 'Pham Van Quy',
+                'email'      => 'quypv@qsoftvietnam.com',
                 'password'   => Hash::make('user'),
                 'confirmed'   => 1,
                 'confirmation_code' => md5(microtime().Config::get('app.key')),
